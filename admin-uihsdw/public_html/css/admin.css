@@ -1,0 +1,21 @@
+.grey{color: #a59c9c}
+
+#get_header_body_footer{
+    margin-top: 40px;
+}
+
+.get_header_body_footer{
+    cursor: pointer;
+}
+
+.retrieved_input{
+    width: 100% !important;
+    font-size: 12px;
+}
+
+.retrieved_text_area{
+    width: 100%;
+    height: 400px;
+    font-family: courier new;
+    font-size: 12px;
+}
