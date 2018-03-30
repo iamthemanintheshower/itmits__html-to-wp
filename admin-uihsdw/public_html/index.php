@@ -43,6 +43,8 @@ if(
     $themes_folder = '-themes-oisdhhwd';
     $theme_name = 'html_theme';
     $_theme_folder = $plugin_folder_path.'admin-uihsdw/'.$themes_folder.'/'.$theme_name;
+    $_theme_folder = str_replace('public_html/', '', $_theme_folder);
+    $_theme_folder = str_replace('admin-uihsdw/admin-uihsdw/', 'admin-uihsdw/', $_theme_folder);
 
     $new_theme_path = get_theme_root().'/'.$theme_name;
 
