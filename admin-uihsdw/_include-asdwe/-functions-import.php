@@ -87,6 +87,16 @@ function replace_tags($ary, $page){
 
                 $replaced_tag = _setDataFieldId($replaced_tag, $field_id);
 
+                switch ($tag_type) {
+                    case 'standard':
+                        break;
+                    case 'image':
+                        $t['content'] = _setMedia($_theme_folder, $t['content']);
+                        break;
+                    default:
+                        break;
+                }
+
                 set_theme_mod('all_'.$field_id, $t['content']); //#TODO: in case of "image", upload it into the media
 
                 $page = str_replace($tag_to_replace, $replaced_tag, $page);
@@ -186,4 +196,31 @@ function _setClass($tag_to_replace, $_class){
 
 function _setDataFieldId($tag_to_replace, $field_id){
     return str_replace('class="', 'data-field_id="'.$field_id.'" class="', $tag_to_replace);
+}
+
+function _setMedia($_theme_folder, $content){
+    $wp_upload_dir = wp_upload_dir();
+    $filename = $_theme_folder.'/'.$content;
+    if(file_exists($filename)){
+        $attachment = array(
+            'guid'           => $wp_upload_dir['url'] . '/' . basename ($filename), 
+            'post_mime_type' => 'image/jpeg',
+            'post_title'     => preg_replace( '/\.[^.]+$/', '', basename ($filename) ),
+            'post_content'   => '',
+            'post_status'    => 'inherit'
+        );
+
+        //#Reference: https://codex.wordpress.org/Function_Reference/wp_insert_attachment
+        if (copy($filename, $wp_upload_dir['path'].'/'.basename ($filename))) {
+            $attach_id = wp_insert_attachment( $attachment, $wp_upload_dir['path'].'/'.basename ($filename) );
+            require_once( ABSPATH . 'wp-admin/includes/image.php' );
+            $attach_data = wp_generate_attachment_metadata($attach_id, $wp_upload_dir['path'].'/'.basename ($filename));
+            wp_update_attachment_metadata($attach_id, $attach_data);
+            return $wp_upload_dir['url'] . '/' . basename ($filename);
+        }else{
+            error_log('!FILE-NOT-COPIED|'.$wp_upload_dir['path'].'/'.basename ($filename).'|', 3, __DIR__.'/log.log');
+        }
+    }else{
+        error_log('*** FILE NOT EXISTS:'.$attach_id, 3, __DIR__.'/log.log');
+    }
 }
