@@ -142,6 +142,11 @@ function _getImportFields(){
                             'field_slug' =>'is_index',
                             'field_type' => 'checkbox'
                         ),
+                    'Copy all folders' =>
+                        array(
+                            'field_slug' => 'copy_all_folders',
+                            'field_type' => 'checkbox'
+                        ),
                     'Page template' =>
                         array(
                             'field_slug' =>'page_template',
