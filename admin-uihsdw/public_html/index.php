@@ -37,25 +37,25 @@ if(
     isset($_POST['retrieved_footer'])
     ){
     global $_theme_folder;
-    global $_get_fields;
-
-    $plugin_folder_path = plugin_dir_path( __FILE__ );
-    $themes_folder = '-themes-oisdhhwd';
-    $theme_name = 'html_theme';
-    $_theme_folder = $plugin_folder_path.'admin-uihsdw/'.$themes_folder.'/'.$theme_name;
-    $_theme_folder = str_replace('public_html/', '', $_theme_folder);
-    $_theme_folder = str_replace('admin-uihsdw/admin-uihsdw/', 'admin-uihsdw/', $_theme_folder);
+    global $theme_name;
 
     $new_theme_path = get_theme_root().'/'.$theme_name;
+
+    if(!file_exists($new_theme_path)){
+        @mkdir($new_theme_path);
+    }else{
+        die('Theme already exists');
+    }
 
     include( str_replace('admin-uihsdw/public_html/', '', plugin_dir_path( __FILE__ )) . 'admin-uihsdw/_include-asdwe/-import.php'); //# TODO: improve this
 
     $file_to_import = $_POST['file_to_import'];
-    $is_index = $_POST['is_index'];
+    $is_index = intval($_POST['is_index']);
+    $copy_all_folders = intval($_POST['copy_all_folders']);
     $page_template = $_POST['page_template'];
-    $page_header = _fix_url(double_quote($_POST['retrieved_header']));
-    $page_body = _fix_url(double_quote($_POST['retrieved_body']));
-    $page_footer = _fix_url(double_quote($_POST['retrieved_footer'].'</html>'));
+    $page_header = _fix_url(double_quote($_POST['retrieved_header']), $_theme_folder, $new_theme_path, $copy_all_folders);
+    $page_body = _fix_url(double_quote($_POST['retrieved_body']), $_theme_folder, $new_theme_path, $copy_all_folders);
+    $page_footer = _fix_url(double_quote($_POST['retrieved_footer'].'</html>'), $_theme_folder, $new_theme_path, $copy_all_folders);
 
     //# 1) header.php
     create_tmpl_header($page_header, $new_theme_path);
@@ -70,9 +70,9 @@ if(
     $get_fields_path = str_replace('admin-uihsdw/public_html/', '', plugin_dir_path( __FILE__ )) . '_include-sihdw/-get_fields.php';
     $created_pages_log = str_replace('admin-uihsdw/public_html/', '', plugin_dir_path( __FILE__ )) . '_include-sihdw/created_pages_log.log';
 
-    $body_to_wp = body_to_wp($page_body, $get_fields_path, $created_pages_log, $page_template);
+    $body_to_wp = body_to_wp($page_body, $get_fields_path, $created_pages_log, $page_template, $_theme_folder);
 
-    if(intval($is_index) === 1){
+    if($is_index === 1){
         //# 5) index.php
         create_tmpl_index('<?php /*
 Theme Name: Imported Template
@@ -105,6 +105,15 @@ Version: 0.0.1
     //# 6) style.css
     create_tmpl_style('', $new_theme_path);
 
+    // 7) copy all folders
+    if($copy_all_folders === 1){
+        $folders_to_copy = scandir($_theme_folder);
+        foreach ($folders_to_copy as $folder){
+            if(is_dir($folder)){
+                copy_resources($_theme_folder.'/'.$folder, $new_theme_path.'/'.$folder);
+            }
+        }
+    }
 }
 
 //# Parse HTML
