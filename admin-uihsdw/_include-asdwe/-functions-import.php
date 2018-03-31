@@ -97,7 +97,7 @@ function replace_tags($ary, $page){
                         break;
                 }
 
-                set_theme_mod('all_'.$field_id, $t['content']); //#TODO: in case of "image", upload it into the media
+                set_theme_mod('all_'.$field_id, $t['content']);
 
                 $page = str_replace($tag_to_replace, $replaced_tag, $page);
 
@@ -168,6 +168,44 @@ function get_img_tag_and_content($page){
     $out = '';
     preg_match_all(
         '/< *img[^>]*src *= *["\']?([^"\']*)/i',
+        $page,
+        $out, PREG_PATTERN_ORDER
+    );
+
+    $ary = null;
+
+    $count = sizeof($out[0]);
+
+    for($i = 0; $i < $count; $i++){
+        $ary[] = array('tag' => $out[0][$i], 'content' => $out[1][$i]);
+    }
+
+    return $ary;
+}
+
+function get_script_tag_and_content($page){
+    $out = '';
+    preg_match_all(
+        '/< *script[^>]*src *= *["\']?([^"\']*)/i',
+        $page,
+        $out, PREG_PATTERN_ORDER
+    );
+
+    $ary = null;
+
+    $count = sizeof($out[0]);
+
+    for($i = 0; $i < $count; $i++){
+        $ary[] = array('tag' => $out[0][$i], 'content' => $out[1][$i]);
+    }
+
+    return $ary;
+}
+
+function get_link_tag_and_content($page){
+    $out = '';
+    preg_match_all(
+        '/< *link[^>]*href *= *["\']?([^"\']*)/i',
         $page,
         $out, PREG_PATTERN_ORDER
     );
