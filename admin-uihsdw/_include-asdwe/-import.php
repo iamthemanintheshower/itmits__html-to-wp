@@ -68,10 +68,54 @@ function create_tmpl_style($index, $new_theme_path){
     }
 }
 
-//# TODO: don't add get_template_directory_uri() to the external URLs
-function _fix_url($page){
-    $_page = str_replace('<link href="', '<link href="<?php echo get_template_directory_uri();?>/', $page);
-    $_page = str_replace('<script src="', '<script src="<?php echo get_template_directory_uri();?>/', $_page);
+function _fix_url($page, $_theme_folder, $new_theme_path, $copy_all_folders){
+    $folders_to_copy = array();
+    $get_script_tag_and_content = get_script_tag_and_content($page);
+    if(isset($get_script_tag_and_content) && is_array($get_script_tag_and_content)){
+        foreach ($get_script_tag_and_content as $t){
+            $tag_to_replace = $t['tag'];
+            $content = $t['content'];
+            if (strpos($content, 'http') === false) {
+                $page = str_replace($content, '<?php echo get_template_directory_uri();?>/'.$content, $page);
+                $folders_to_copy[] = explode('/', $content)[0];
+            }
+        }
+    }
+    
+    $get_link_tag_and_content = get_link_tag_and_content($page);
+    if(isset($get_link_tag_and_content) && is_array($get_link_tag_and_content)){
+        foreach ($get_link_tag_and_content as $t){
+            $tag_to_replace = $t['tag'];
+            $content = $t['content'];
+            if (strpos($content, 'http') === false) {
+                $page = str_replace($content, '<?php echo get_template_directory_uri();?>/'.$content, $page);
+                $folders_to_copy[] = explode('/', $content)[0];
+            }
+        }
+    }
 
-    return $_page;
+    if($copy_all_folders === 0){
+        foreach ($folders_to_copy as $folder){
+            copy_resources($_theme_folder.'/'.$folder, $new_theme_path.'/'.$folder);
+        }
+    }
+
+    return $page;
+}
+
+function copy_resources($source, $destination) { 
+    $dir = opendir($source); 
+    @mkdir($destination); 
+    while(false !== ( $file = readdir($dir)) ) { 
+        if(($file != '.' ) && ($file != '..') && pathinfo($file, PATHINFO_EXTENSION) !== '.html'){ 
+            if (is_dir($source.'/'.$file)){ 
+                copy_resources($source.'/'.$file, $destination.'/'.$file); 
+            }else{
+                if(!file_exists($destination.'/'.$file)){
+                    copy($source.'/'.$file, $destination.'/'.$file);
+                }
+            }
+        } 
+    } 
+    closedir($dir); 
 }
