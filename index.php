@@ -31,6 +31,7 @@ DEALINGS IN THE SOFTWARE.
 */
 
 global $_theme_folder;
+global $theme_name;
 global $_get_fields;
 global $plugin_folder_path;
 global $plugin_dir_url;
