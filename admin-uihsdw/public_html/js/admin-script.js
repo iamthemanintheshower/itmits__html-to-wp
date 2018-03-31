@@ -41,14 +41,19 @@ jQuery(document).ready(function () {
 
     jQuery('body').on('click', '#btnCreateTemplate', function () {
         var is_index = 0;
+        var copy_all_folders = 0;
         if(jQuery('#is_index').is(':checked')){
             is_index = 1;
+        }
+        if(jQuery('#copy_all_folders').is(':checked')){
+            copy_all_folders = 1;
         }
         
         var values = {
             btnCreateTemplate: 'btnCreateTemplate',
             file_to_import: jQuery('#file_to_import').val(),
             is_index: is_index,
+            copy_all_folders: copy_all_folders,
             page_template: jQuery('#page_template').val(),
             retrieved_header: jQuery('#retrieved_header').val(),
             retrieved_body: jQuery('#retrieved_body').val(),
