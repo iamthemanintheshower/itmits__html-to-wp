@@ -28,36 +28,43 @@ function get_custom_tag($tag, $page_path){
 }
 
 
-function body_to_wp($page_body, $get_fields_path, $created_pages_log, $page_template_name){
+function body_to_wp($page_body, $get_fields_path, $created_pages_log, $page_template_name, $_theme_folder){
     $date = new DateTime();
 
-    $_standard = manage_tags('standard', $page_body);
-    $_image = manage_tags('image', $_standard['_replace_tags']['page']);
+    $_standard = manage_tags('standard', $page_body, $_theme_folder, $page_template_name);
+    $_div = manage_tags('div', $_standard['_replace_tags']['page'], $_theme_folder, $page_template_name);
+    $_image = manage_tags('image', $_div['_replace_tags']['page'], $_theme_folder, $page_template_name);
 
     $_get_fields__file = $_standard['_replace_tags']['get_fields__file'];
     $getFields = '<?php function getFields(){'.$_get_fields__file.' return $ary_fields; }';
 
+    $getDivs = PHP_EOL.'$fieldsByPage["'.$page_template_name.'"] = array('.$_div['get_fields__file'].');';
+
     $_get_fields__file__image = $_image['_replace_tags']['get_fields__file'];
     $getImages = 'function getImages(){'.$_get_fields__file__image.' return $ary_fields; }';
 
-    file_put_contents($get_fields_path,
-        $getFields.PHP_EOL.$getImages
-    );
+    file_put_contents($get_fields_path,$getFields.PHP_EOL.$getImages.PHP_EOL.$getDivs);
 
     file_put_contents($created_pages_log, $date->format('d-m-Y_H:i:s').'-'.basename($page_template_name).print_r($_get_fields__file, true).PHP_EOL);
 
     return $_image['_replace_tags']['page'];
 }
 
-function manage_tags($tag_type, $page_body){
+function manage_tags($tag_type, $page_body, $_theme_folder){
     switch ($tag_type) {
+        case 'div':
+            $_setDataIdToAllSelectedTags = setDataIdToAllSelectedTags('div', $page_body);
+            return 
+                array(
+                '_replace_tags' => array('page' => $_setDataIdToAllSelectedTags['page']), 
+                'get_fields__file' => $_setDataIdToAllSelectedTags['get_fields__file']
+            );
         case 'standard':
             $aryTagsToEdit = array( 'p', 'h1', 'h2', 'h3', 'h4' );
             foreach ($aryTagsToEdit as $t){
                 $_ary[$t] = get_tag_and_content($t, $page_body);
             }
-
-            $_replace_tags = replace_tags($_ary, $page_body);
+            $_replace_tags = replace_tags($_ary, $page_body, $tag_type, $_theme_folder);
 
             return array('_replace_tags' => $_replace_tags, 'fields' => '<?php function getFields(){'.$_replace_tags['get_fields__file'].' return $ary_fields; }');
         case 'image':
@@ -65,7 +72,7 @@ function manage_tags($tag_type, $page_body){
             foreach ($aryTagsToEdit as $t){
                 $_ary[$t] = get_img_tag_and_content($page_body);
             }
-            $_replace_tags = replace_tags($_ary, $page_body);
+            $_replace_tags = replace_tags($_ary, $page_body, $tag_type, $_theme_folder);
 
             return array('_replace_tags' => $_replace_tags, 'fields' => '<?php function getImages(){'.$_replace_tags['get_fields__file'].' return $ary_fields; }');
         default:
@@ -73,7 +80,7 @@ function manage_tags($tag_type, $page_body){
     }
 }
 
-function replace_tags($ary, $page){
+function replace_tags($ary, $page, $tag_type, $_theme_folder){
     foreach ($ary as $tag){
         if(isset($tag)){
             foreach ($tag as $t){
@@ -144,7 +151,18 @@ function get_tag_and_content($tag_string, $page){
 
     return $ary;
 }
-
+function setDataIdToAllSelectedTags($tag, $page){
+    $page_lines = explode(PHP_EOL, $page);
+    $lines = $get_fields__file = '';
+    foreach ($page_lines as $line){
+        $field_id = generateRandomString();
+        $lines .= str_replace('<'.$tag, '<'.$tag.' data-field_id="'.$field_id.'"', $line).PHP_EOL;
+        $get_fields__file .= '"'.$field_id.'", ';
+    }
+    return array('page' => $lines, 
+        'get_fields__file' => $get_fields__file);
+    
+}
 function _get_tag_content($tag, $page_path){
     $match = '';
     $start = '<'.$tag.'>';
@@ -256,9 +274,9 @@ function _setMedia($_theme_folder, $content){
             wp_update_attachment_metadata($attach_id, $attach_data);
             return $wp_upload_dir['url'] . '/' . basename ($filename);
         }else{
-            error_log('!FILE-NOT-COPIED|'.$wp_upload_dir['path'].'/'.basename ($filename).'|', 3, __DIR__.'/log.log');
+            error_log('!COPY-NOT|'.$wp_upload_dir['path'].'/'.basename ($filename).'|', 3, __DIR__.'/log.log');
         }
     }else{
-        error_log('*** FILE NOT EXISTS:'.$attach_id, 3, __DIR__.'/log.log');
+        error_log('*** FILE NON ESISTE:'.$attach_id, 3, __DIR__.'/log.log');
     }
 }
