@@ -70,9 +70,9 @@ if(
     $get_fields_path = str_replace('admin-uihsdw/public_html/', '', plugin_dir_path( __FILE__ )) . '_include-sihdw/-get_fields.php';
     $created_pages_log = str_replace('admin-uihsdw/public_html/', '', plugin_dir_path( __FILE__ )) . '_include-sihdw/created_pages_log.log';
 
-    $body_to_wp = body_to_wp($page_body, $get_fields_path, $created_pages_log, $page_template, $_theme_folder);
-
     if($is_index === 1){
+        $body_to_wp = body_to_wp($page_body, $get_fields_path, $created_pages_log, 'index.php', $_theme_folder);
+
         //# 5) index.php
         create_tmpl_index('<?php /*
 Theme Name: Imported Template
@@ -82,6 +82,7 @@ Version: 0.0.1
 */ get_header(); ?>'.$body_to_wp.'<?php get_footer(); ?>', $new_theme_path);
 
     }else{
+        $body_to_wp = body_to_wp($page_body, $get_fields_path, $created_pages_log, $page_template, $_theme_folder);
 
         //# 4) page-[template].php
         $_page = '<?php 
