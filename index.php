@@ -33,19 +33,19 @@ DEALINGS IN THE SOFTWARE.
 global $_theme_folder;
 global $theme_name;
 global $_get_fields;
-global $plugin_folder_path;
-global $plugin_dir_url;
+global $plugin_folder_path__html_to_wp;
+global $plugin_dir_url__html_to_wp;
 
-$plugin_dir_url = plugin_dir_url( __FILE__ );
-$plugin_folder_path = plugin_dir_path( __FILE__ );
+$plugin_dir_url__html_to_wp = plugin_dir_url( __FILE__ );
+$plugin_folder_path__html_to_wp = plugin_dir_path( __FILE__ );
 $themes_folder = '-themes-oisdhhwd';
 $theme_name = 'html_theme';
-$_theme_folder = $plugin_folder_path.'admin-uihsdw/'.$themes_folder.'/'.$theme_name;
+$_theme_folder = $plugin_folder_path__html_to_wp.'admin-uihsdw/'.$themes_folder.'/'.$theme_name;
 
-include($plugin_folder_path . '_include-sihdw/-get_fields.php');
-include($plugin_folder_path . 'admin-uihsdw/_include-asdwe/-functions-import-panel.php'); //# Admin panel
-include($plugin_folder_path . 'admin-uihsdw/_include-asdwe/-functions-import.php'); //# Parser and Create template button
-include($plugin_folder_path . 'admin-uihsdw/_include-asdwe/-functions-customizer.php'); //# Customizer
+include($plugin_folder_path__html_to_wp . '_include-sihdw/-get_fields.php');
+include($plugin_folder_path__html_to_wp . 'admin-uihsdw/_include-asdwe/-functions-import-panel.php'); //# Admin panel
+include($plugin_folder_path__html_to_wp . 'admin-uihsdw/_include-asdwe/-functions-import.php'); //# Parser and Create template button
+include($plugin_folder_path__html_to_wp . 'admin-uihsdw/_include-asdwe/-functions-customizer.php'); //# Customizer
 
 //# admin panel
 add_action('admin_menu', 'theme_customizer__menu');
