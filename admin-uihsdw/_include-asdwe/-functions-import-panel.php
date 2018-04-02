@@ -26,22 +26,22 @@ DEALINGS IN THE SOFTWARE.
 //https://codex.wordpress.org/Creating_Options_Pages
 
 function admin_inline_js(){
-    global $plugin_dir_url;
+    global $plugin_dir_url__html_to_wp;
     echo "<script type='text/javascript'>\n";
-        echo 'var pluginUrl = "' . $plugin_dir_url . '";';
+        echo 'var pluginUrl = "' . $plugin_dir_url__html_to_wp . '";';
     echo "\n</script>";
 }
 
 function admin_enqueue() { //https://codex.wordpress.org/Plugin_API/Action_Reference/admin_enqueue_scripts
-    global $plugin_dir_url;
-    wp_enqueue_style( 'admin', $plugin_dir_url . '/admin-uihsdw/public_html/css/admin.css' );
-    wp_enqueue_script( 'admin', $plugin_dir_url . '/admin-uihsdw/public_html/js/admin-script.js' );
+    global $plugin_dir_url__html_to_wp;
+    wp_enqueue_style( 'admin-html-to-wp', $plugin_dir_url__html_to_wp . '/admin-uihsdw/public_html/css/admin.css' );
+    wp_enqueue_script( 'admin-html-to-wp', $plugin_dir_url__html_to_wp . '/admin-uihsdw/public_html/js/admin-script.js' );
 }
 
 
 function theme_customizer__menu() {
-    global $plugin_dir_url;
-    add_menu_page('Settings', 'HTML to WP', 'administrator', __FILE__, 'theme_customizer_init__settings_page' , $plugin_dir_url . '/admin-uihsdw/public_html/imgs/icon.png' );
+    global $plugin_dir_url__html_to_wp;
+    add_menu_page('Settings', 'HTML to WP', 'administrator', __FILE__, 'theme_customizer_init__settings_page' , $plugin_dir_url__html_to_wp . '/admin-uihsdw/public_html/imgs/icon.png' );
     add_submenu_page(__FILE__, 'Import Settings', 'Import', 'administrator', 'config-theme-customizer', 'theme_customizer__settings_page');
 }
 
@@ -139,7 +139,7 @@ function _getImportFields(){
                         ),
                     'Is index?' =>
                         array(
-                            'field_slug' =>'is_index',
+                            'field_slug' => 'is_index',
                             'field_type' => 'checkbox'
                         ),
                     'Copy all folders' =>
